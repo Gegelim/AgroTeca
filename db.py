@@ -1,7 +1,9 @@
 import sqlite3
 
+
 def conectar_banco():
     return sqlite3.connect("database.db")
+
 
 def criar_banco():
     conexao = conectar_banco()
@@ -17,6 +19,19 @@ def criar_banco():
             autor TEXT,
             arquivo TEXT,
             status TEXT DEFAULT 'pendente'
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS precos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            produto TEXT NOT NULL,
+            unidade TEXT NOT NULL,
+            preco_atual REAL NOT NULL,
+            preco_anterior REAL,
+            fonte TEXT,
+            data_atualizacao TEXT,
+            tendencia TEXT
         )
     """)
 

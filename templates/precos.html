@@ -13,101 +13,36 @@
 
 <section class="price-grid">
 
+    {% for preco in precos %}
+
     <div class="price-card">
+
         <div class="price-top">
             <div>
-                <h2>Açaí</h2>
-                <p>lata (14kg)</p>
+                <h2>{{ preco[1] }}</h2>
+                <p>{{ preco[2] }}</p>
             </div>
-            <span class="status up">↗</span>
+
+            {% if preco[7] == "subiu" %}
+                <span class="status up">↗</span>
+            {% elif preco[7] == "caiu" %}
+                <span class="status down">↘</span>
+            {% else %}
+                <span class="status stable">→</span>
+            {% endif %}
         </div>
 
         <hr>
 
-        <h3>R$ 85.00</h3>
-        <p>Anterior: R$ 80.00</p>
-        <small>Fonte: feira local</small>
+        <h3>R$ {{ "%.2f"|format(preco[3]) }}</h3>
+
+        <p>Anterior: R$ {{ "%.2f"|format(preco[4]) }}</p>
+        <small>Fonte: {{ preco[5] }}</small>
+        <small>Atualizado em: {{ preco[6] }}</small>
+
     </div>
 
-    <div class="price-card">
-        <div class="price-top">
-            <div>
-                <h2>Mandioca</h2>
-                <p>saco (50kg)</p>
-            </div>
-            <span class="status down">↘</span>
-        </div>
-
-        <hr>
-
-        <h3>R$ 45.00</h3>
-        <p>Anterior: R$ 48.00</p>
-        <small>Fonte: produtores locais</small>
-    </div>
-
-    <div class="price-card">
-        <div class="price-top">
-            <div>
-                <h2>Cacau</h2>
-                <p>arroba (15kg)</p>
-            </div>
-            <span class="status up">↗</span>
-        </div>
-
-        <hr>
-
-        <h3>R$ 420.00</h3>
-        <p>Anterior: R$ 410.00</p>
-        <small>Fonte: referência regional</small>
-    </div>
-
-    <div class="price-card">
-        <div class="price-top">
-            <div>
-                <h2>Farinha</h2>
-                <p>saco (50kg)</p>
-            </div>
-            <span class="status stable">→</span>
-        </div>
-
-        <hr>
-
-        <h3>R$ 120.00</h3>
-        <p>Anterior: R$ 120.00</p>
-        <small>Fonte: feira local</small>
-    </div>
-
-    <div class="price-card">
-        <div class="price-top">
-            <div>
-                <h2>Dendê</h2>
-                <p>cacho (10kg)</p>
-            </div>
-            <span class="status up">↗</span>
-        </div>
-
-        <hr>
-
-        <h3>R$ 35.00</h3>
-        <p>Anterior: R$ 33.00</p>
-        <small>Fonte: produtores locais</small>
-    </div>
-
-    <div class="price-card">
-        <div class="price-top">
-            <div>
-                <h2>Cupuaçu</h2>
-                <p>kg</p>
-            </div>
-            <span class="status up">↗</span>
-        </div>
-
-        <hr>
-
-        <h3>R$ 5.50</h3>
-        <p>Anterior: R$ 5.00</p>
-        <small>Fonte: feira local</small>
-    </div>
+    {% endfor %}
 
 </section>
 

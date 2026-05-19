@@ -22,7 +22,23 @@ def home():
 
 @app.route("/precos")
 def precos():
-    return render_template("precos.html")
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT * FROM precos
+        ORDER BY id DESC
+    """)
+
+    precos = cursor.fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "precos.html",
+        precos=precos
+    )
 
 
 @app.route("/tecnicas")
@@ -191,10 +207,90 @@ def login():
     return render_template("login.html")
 
 
+@app.route("/admin/precos", methods=["GET", "POST"])
+def admin_precos():
+
+    if "logado" not in session:
+        return redirect("/login")
+
+    if request.method == "POST":
+        produto = request.form["produto"]
+        unidade = request.form["unidade"]
+        preco_atual = request.form["preco_atual"]
+        preco_anterior = request.form["preco_anterior"]
+        fonte = request.form["fonte"]
+        data_atualizacao = request.form["data_atualizacao"]
+
+        preco_atual_float = float(preco_atual)
+        preco_anterior_float = float(preco_anterior)
+
+        if preco_atual_float > preco_anterior_float:
+            tendencia = "subiu"
+        elif preco_atual_float < preco_anterior_float:
+            tendencia = "caiu"
+        else:
+            tendencia = "estavel"
+
+        conexao = conectar_banco()
+        cursor = conexao.cursor()
+
+        cursor.execute("""
+            INSERT INTO precos
+            (produto, unidade, preco_atual, preco_anterior, fonte, data_atualizacao, tendencia)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            produto,
+            unidade,
+            preco_atual_float,
+            preco_anterior_float,
+            fonte,
+            data_atualizacao,
+            tendencia
+        ))
+
+        conexao.commit()
+        conexao.close()
+
+        return redirect("/admin/precos")
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT * FROM precos
+        ORDER BY id DESC
+    """)
+
+    precos = cursor.fetchall()
+
+    conexao.close()
+
+    return render_template("admin_precos.html", precos=precos)
+
+
+@app.route("/deletar_preco/<int:id>")
+def deletar_preco(id):
+
+    if "logado" not in session:
+        return redirect("/login")
+
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        DELETE FROM precos
+        WHERE id = ?
+    """, (id,))
+
+    conexao.commit()
+    conexao.close()
+
+    return redirect("/admin/precos")
+
+
 # -------------------------
 # INICIAR APP
 # -------------------------
-
 if __name__ == "__main__":
 
     criar_banco()

@@ -1,14 +1,14 @@
 # 🌱 AgroTeca — Biblioteca Comunitária de Jutaiteua
 
-A AgroTeca é uma plataforma digital comunitária desenvolvida para preservar, organizar e compartilhar conhecimentos agrícolas, culturais e educativos da comunidade de Jutaiteua, no interior do Pará.
+A AgroTeca é uma plataforma digital comunitária criada para preservar, organizar e compartilhar conhecimentos agrícolas, culturais e educativos da comunidade de Jutaiteua, no interior do Pará.
 
-O sistema conecta tecnologia e saberes tradicionais amazônicos, permitindo que moradores enviem conteúdos que passam por um processo de curadoria antes da publicação.
+O projeto busca conectar tecnologia e saberes tradicionais amazônicos, permitindo que moradores compartilhem conteúdos que passam por um processo de curadoria antes da publicação.
 
 ---
 
 # 🌎 Objetivo do Projeto
 
-Fortalecer a agricultura familiar e valorizar os conhecimentos tradicionais da comunidade através de uma plataforma acessível, colaborativa e sustentável.
+Fortalecer a agricultura familiar e valorizar os conhecimentos tradicionais da comunidade através de uma biblioteca digital acessível, colaborativa e sustentável.
 
 ---
 
@@ -18,8 +18,8 @@ Fortalecer a agricultura familiar e valorizar os conhecimentos tradicionais da c
 - Página inicial institucional
 - Informações sobre a comunidade
 - Técnicas de plantio
-- Cartilhas comunitárias
-- Vídeos educativos
+- Cartilhas digitais
+- Vídeos comunitários
 - Página de conteúdos aprovados
 
 ---
@@ -30,20 +30,17 @@ Fortalecer a agricultura familiar e valorizar os conhecimentos tradicionais da c
 - Rejeição de conteúdos
 - Exclusão de conteúdos
 - Edição de conteúdos enviados
-- Painel administrativo protegido por login
+- Área administrativa protegida por login
 
 ---
 
-## 📈 Sistema Dinâmico de Preços Agrícolas
-- Cadastro de preços agrícolas
-- Atualização dinâmica via banco de dados
-- Tendência automática:
-  - 📈 Subiu
-  - 📉 Caiu
-  - ➖ Estável
-- Exclusão de preços
-- Edição de preços
-- Página pública atualizada automaticamente
+## 📂 Upload de Arquivos
+- Upload real de PDFs
+- Upload de imagens
+- Upload de arquivos diversos
+- Armazenamento em servidor local
+- Visualização de arquivos pelo curador
+- Download/abertura pública de cartilhas aprovadas
 
 ---
 
@@ -73,10 +70,7 @@ AGROTECA/
 │
 ├── static/
 │   ├── style.css
-│   ├── index.css
-│   ├── preco.css
-│   ├── tecnicas.css
-│   └── videos.css
+│   └── uploads/
 │
 ├── templates/
 │   ├── base.html
@@ -88,11 +82,8 @@ AGROTECA/
 │   ├── enviar.html
 │   ├── conteudos.html
 │   ├── admin.html
-│   ├── admin_precos.html
 │   ├── editar_conteudo.html
-│   ├── editar_preco.html
-│   ├── login.html
-│   └── precos.html
+│   └── login.html
 │
 └── __pycache__/
 ```
@@ -109,7 +100,7 @@ git clone LINK_DO_REPOSITORIO
 
 ---
 
-## 2️⃣ Entre na pasta
+## 2️⃣ Entre na pasta do projeto
 
 ```bash
 cd AGROTECA
@@ -117,7 +108,7 @@ cd AGROTECA
 
 ---
 
-## 3️⃣ Instale o Flask
+## 3️⃣ Instale as dependências
 
 ```bash
 pip install flask
@@ -153,18 +144,18 @@ Senha: 1234
 # 🧩 Funcionalidades Técnicas
 
 ## CRUD de Conteúdos
-- Create → Enviar conteúdo
-- Read → Visualizar conteúdos
-- Update → Editar conteúdo
-- Delete → Excluir conteúdo
 
----
+### Create
+Enviar conteúdo pela plataforma
 
-## CRUD de Preços
-- Create → Cadastrar preço
-- Read → Exibir preços
-- Update → Editar preço
-- Delete → Excluir preço
+### Read
+Visualizar conteúdos aprovados
+
+### Update
+Editar conteúdos enviados
+
+### Delete
+Excluir conteúdos
 
 ---
 
@@ -174,7 +165,8 @@ A interface foi desenvolvida com foco em:
 - simplicidade;
 - acessibilidade;
 - identidade amazônica;
-- experiência comunitária.
+- experiência comunitária;
+- navegação intuitiva.
 
 ---
 
@@ -191,17 +183,17 @@ A AgroTeca busca:
 
 # 🚧 Próximas Implementações
 
-- Upload real de imagens
-- Upload de PDFs
-- Upload de vídeos
-- Sistema de usuários
+- Sistema real de usuários
 - Busca de conteúdos
 - Filtros por categoria
+- Upload de vídeos
+- Upload de áudios
 - Comentários da comunidade
-- Integração com APIs agrícolas
-- Dashboard estatístico
-- Deploy online
+- Dashboard administrativo
 - Responsividade mobile avançada
+- Deploy online
+- Integração com APIs externas
+- Inteligência Artificial para apoio à curadoria
 
 ---
 

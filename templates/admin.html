@@ -9,6 +9,16 @@
     <p>Gerencie todos os conteúdos enviados pela comunidade</p>
 </section>
 
+{% if resets_pendentes %}
+<div class="alert alert-error" role="status">
+    <i class="fa-solid fa-key" aria-hidden="true"></i>
+    {{ resets_pendentes }}
+    {{ 'morador pediu' if resets_pendentes == 1 else 'moradores pediram' }}
+    ajuda para entrar.
+    <a href="/moradores">Redefinir senha</a>
+</div>
+{% endif %}
+
 <div class="admin-stats">
     <div class="admin-stat-card stat-pending">
         <span class="stat-number">{{ total_pendente }}</span>

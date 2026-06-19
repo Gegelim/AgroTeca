@@ -10,8 +10,8 @@
 </a>
 
 <section class="page-title">
-    <h1>Vídeos da Comunidade</h1>
-    <p>Aprenda com a experiência dos agricultores de Jutaiteua</p>
+    <h1>Vídeos da comunidade</h1>
+    <p>Moradores demonstrando práticas, contando histórias e ensinando ofícios</p>
 </section>
 
 <section class="video-list">
@@ -49,7 +49,7 @@
             <a href="{{ url_for('static', filename='uploads/' + video[6]) }}"
                target="_blank" class="file-preview-btn">
                 <i class="fa-solid fa-file-arrow-down"></i>
-                Abrir arquivo
+                Baixar vídeo
             </a>
             {% endif %}
 
@@ -59,17 +59,20 @@
 
     {% else %}
 
-    <p class="empty-state">
-        Ainda não há vídeos aprovados. Envie o seu em
-        <a href="/enviar">Enviar conhecimento</a>.
-    </p>
+    <div class="empty-state" role="status">
+        <i class="fa-solid fa-clapperboard" aria-hidden="true"></i>
+        <p>
+            Ainda ninguém publicou um vídeo aqui. Quer ser o primeiro?
+            <a href="/enviar">Envie o seu</a>.
+        </p>
+    </div>
 
     {% endfor %}
 
 </section>
 
 <div class="videos-footer">
-    Novos vídeos adicionados toda semana pela comunidade
+    Novos vídeos aparecem aqui conforme a comunidade envia.
 </div>
 
 {% endblock %}

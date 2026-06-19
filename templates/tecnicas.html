@@ -10,12 +10,13 @@
 </a>
 
 <section class="page-title">
-    <h1>Técnicas de Plantio</h1>
-    <p>Dicas práticas para melhorar sua produção</p>
+    <h1>Técnicas de plantio</h1>
+    <p>Como preparamos a terra, plantamos e cuidamos do que colhemos</p>
 </section>
 
-<h2 class="section-title">Cuidados Essenciais</h2>
+<h2 class="section-title">Cuidados essenciais</h2>
 
+{% if tecnicas %}
 <section class="tips-grid">
 
     {% for tecnica in tecnicas %}
@@ -45,8 +46,17 @@
     {% endfor %}
 
 </section>
+{% else %}
+<div class="empty-state" role="status">
+    <i class="fa-solid fa-seedling" aria-hidden="true"></i>
+    <p>
+        Os cuidados enviados pela comunidade aparecem aqui depois da aprovação.
+        Conhece uma técnica que dá certo? <a href="/enviar">Compartilhe</a>.
+    </p>
+</div>
+{% endif %}
 
-<h2 class="section-title">Guia por Cultivo</h2>
+<h2 class="section-title">Guia por cultivo</h2>
 
 <section class="crop-list">
 
@@ -105,7 +115,7 @@
 </section>
 
 <div class="tips-footer">
-    Consulte sempre agricultores experientes da comunidade
+    Antes de aplicar, converse com quem já planta há tempo na comunidade.
 </div>
 
 {% endblock %}

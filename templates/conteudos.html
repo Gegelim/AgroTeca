@@ -10,8 +10,8 @@
 </a>
 
 <section class="page-title">
-    <h1>Acervo da Biblioteca</h1>
-    <p>Conhecimentos aprovados e compartilhados pela comunidade</p>
+    <h1>Acervo</h1>
+    <p>Tudo que a comunidade já compartilhou e os curadores publicaram</p>
 </section>
 
 <section class="admin-list">
@@ -31,7 +31,7 @@
         </p>
 
         <div class="admin-author">
-            Enviado por: {{ conteudo[5] }}
+            Enviado por {{ conteudo[5] }}
         </div>
 
         {% if conteudo[6] %}
@@ -42,6 +42,16 @@
         </a>
         {% endif %}
 
+    </div>
+
+    {% else %}
+
+    <div class="empty-state" role="status">
+        <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+        <p>
+            O acervo ainda está começando. Os conteúdos aparecem aqui depois
+            que um curador aprova. <a href="/enviar">Envie o primeiro</a>.
+        </p>
     </div>
 
     {% endfor %}

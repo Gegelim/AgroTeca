@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Moradores · AgroTeca{% endblock %}
+
+{% block content %}
+
+<a href="/admin" class="back-link">
+    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+    Voltar ao painel
+</a>
+
+<section class="page-title">
+    <h1>Moradores</h1>
+    <p>Contas da comunidade e pedidos de nova senha</p>
+</section>
+
+{% if redefinido %}
+<div class="alert alert-success" role="status">
+    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+    Senha redefinida. Entregue a nova senha ao morador com segurança.
+</div>
+{% endif %}
+
+{% if erro %}
+<div class="alert alert-error" role="alert">
+    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {{ erro }}
+</div>
+{% endif %}
+
+<section class="admin-list">
+
+    {% for u in usuarios %}
+
+    <div class="admin-card morador-card {% if u.reset_solicitado %}morador-pediu{% endif %}">
+
+        <div class="admin-top">
+            <div>
+                <h2>{{ u.nome }}</h2>
+                <span>{{ u.usuario }}</span>
+            </div>
+
+            <span class="role-badge {% if u.role == 'admin' %}role-admin{% else %}role-aluno{% endif %}">
+                {% if u.role == 'admin' %}Curador{% else %}Morador{% endif %}
+            </span>
+        </div>
+
+        {% if u.reset_solicitado %}
+        <p class="morador-flag" role="status">
+            <i class="fa-solid fa-key" aria-hidden="true"></i>
+            Pediu ajuda para entrar. Crie uma senha nova e entregue a essa pessoa.
+        </p>
+        {% endif %}
+
+        <form method="POST" action="/redefinir-senha/{{ u.id }}" class="morador-reset">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="nova-{{ u.id }}">Nova senha para {{ u.nome }}</label>
+                <div class="input-password-wrapper">
+                    <input
+                        type="password"
+                        id="nova-{{ u.id }}"
+                        name="nova_senha"
+                        placeholder="Mínimo 6 caracteres"
+                        autocomplete="new-password"
+                        minlength="6"
+                        maxlength="128"
+                        required
+                    >
+                    <button type="button"
+                            class="toggle-password"
+                            aria-label="Mostrar senha"
+                            aria-pressed="false"
+                            aria-controls="nova-{{ u.id }}"
+                            onclick="togglePassword('nova-{{ u.id }}', 'icon-nova-{{ u.id }}')">
+                        <i class="fa-regular fa-eye" id="icon-nova-{{ u.id }}" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="edit-btn">
+                <i class="fa-solid fa-rotate" aria-hidden="true"></i> Redefinir senha
+            </button>
+        </form>
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-state" role="status">
+        <i class="fa-solid fa-users" aria-hidden="true"></i>
+        <p>Ainda não há contas cadastradas.</p>
+    </div>
+
+    {% endfor %}
+
+</section>
+
+{% endblock %}

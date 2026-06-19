@@ -8,7 +8,15 @@ from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-from db import buscar_usuario, criar_banco, get_db
+from db import (
+    buscar_usuario,
+    contar_resets_pendentes,
+    criar_banco,
+    get_db,
+    listar_usuarios,
+    marcar_reset_solicitado,
+    redefinir_senha,
+)
 
 
 # -------------------------
@@ -59,6 +67,17 @@ def create_app():
     app.secret_key = secret
 
     CSRFProtect(app)
+
+    @app.context_processor
+    def inject_curadoria_badge():
+        """Expose the count of pending password-reset requests so the navbar can
+        flag them for curators. Only queried for admins; failures degrade to 0."""
+        if session.get("role") != ROLE_ADMIN:
+            return {"resets_pendentes": 0}
+        try:
+            return {"resets_pendentes": contar_resets_pendentes()}
+        except Exception:
+            return {"resets_pendentes": 0}
 
     logging.basicConfig(
         level=logging.INFO,
@@ -186,6 +205,7 @@ def _register_routes(app):
             return render_template("enviar.html")
 
         fields, erro = _collect_fields({
+            "autor": AUTOR_MAX,
             "titulo": TITULO_MAX,
             "categoria": CATEGORIA_MAX,
             "tipo": TIPO_MAX,
@@ -197,7 +217,9 @@ def _register_routes(app):
         categoria = fields["categoria"]
         tipo = fields["tipo"]
         descricao = fields["descricao"]
-        autor = session["nome"]
+        # Honour the named contributor typed in the form (PRODUCT.md: author
+        # names are first-class content), not the submitting account.
+        autor = fields["autor"]
 
         arquivo = request.files.get("arquivo")
         nome_arquivo = None
@@ -319,6 +341,36 @@ def _register_routes(app):
             abort(404)
         return render_template("editar_conteudo.html", conteudo=conteudo)
 
+    # ---- moradores (curadoria de contas) ----
+
+    @app.route("/moradores")
+    @admin_required
+    def moradores():
+        return render_template(
+            "moradores.html",
+            usuarios=listar_usuarios(),
+            erro=request.args.get("erro"),
+            redefinido=request.args.get("ok"),
+        )
+
+    @app.route("/redefinir-senha/<int:id>", methods=["POST"])
+    @admin_required
+    def redefinir_senha_admin(id):
+        nova = request.form.get("nova_senha") or ""
+        if len(nova) < 6:
+            return redirect("/moradores?erro=A+nova+senha+deve+ter+ao+menos+6+caracteres")
+
+        with get_db() as conn:
+            existe = conn.execute(
+                "SELECT 1 FROM usuarios WHERE id = ?", (id,)
+            ).fetchone()
+        if not existe:
+            abort(404)
+
+        redefinir_senha(id, generate_password_hash(nova))
+        logging.info("Senha redefinida pelo curador para usuario_id=%s", id)
+        return redirect("/moradores?ok=1")
+
     # ---- auth ----
 
     @app.route("/login", methods=["GET", "POST"])
@@ -343,6 +395,25 @@ def _register_routes(app):
             return render_template("login.html", erro="Usuário ou senha incorretos"), 401
 
         return render_template("login.html")
+
+    @app.route("/esqueci-senha", methods=["GET", "POST"])
+    def esqueci_senha():
+        if "usuario_id" in session:
+            return redirect("/")
+
+        if request.method == "POST":
+            usuario = (request.form.get("usuario") or "").strip()
+            # Register the request when the account exists, but always show the
+            # same confirmation so the form never reveals which usernames are
+            # real. A curator then resets the password from the Moradores panel.
+            if usuario:
+                u = buscar_usuario(usuario)
+                if u:
+                    marcar_reset_solicitado(u["id"])
+                    logging.info("Pedido de redefinição de senha para usuário=%r", usuario)
+            return render_template("esqueci_senha.html", enviado=True)
+
+        return render_template("esqueci_senha.html")
 
     @app.route("/registro", methods=["GET", "POST"])
     def registro():

@@ -44,15 +44,28 @@ def criar_banco():
 
         cur.execute("""
             CREATE TABLE IF NOT EXISTS usuarios (
-                id      INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome    TEXT NOT NULL,
-                usuario TEXT NOT NULL UNIQUE,
-                senha   TEXT NOT NULL,
-                role    TEXT NOT NULL DEFAULT 'aluno'
+                id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome             TEXT NOT NULL,
+                usuario          TEXT NOT NULL UNIQUE,
+                senha            TEXT NOT NULL,
+                role             TEXT NOT NULL DEFAULT 'aluno',
+                reset_solicitado INTEGER NOT NULL DEFAULT 0
             )
         """)
 
+        _migrar_colunas(cur)
         _seed_admin_if_configured(cur)
+
+
+def _migrar_colunas(cur):
+    """Add columns introduced after the initial schema to databases created by
+    an earlier version. CREATE TABLE IF NOT EXISTS never alters an existing
+    table, so new columns need an explicit, idempotent migration."""
+    cols = {row[1] for row in cur.execute("PRAGMA table_info(usuarios)").fetchall()}
+    if "reset_solicitado" not in cols:
+        cur.execute(
+            "ALTER TABLE usuarios ADD COLUMN reset_solicitado INTEGER NOT NULL DEFAULT 0"
+        )
 
 
 def _seed_admin_if_configured(cur):
@@ -78,3 +91,38 @@ def buscar_usuario(usuario):
             "SELECT * FROM usuarios WHERE usuario = ?", (usuario,)
         ).fetchone()
         return dict(row) if row else None
+
+
+def listar_usuarios():
+    """All accounts, with pending password-reset requests surfaced first so a
+    curator sees who needs help at the top of the list."""
+    with get_db() as conn:
+        rows = conn.execute(
+            """SELECT id, nome, usuario, role, reset_solicitado
+                 FROM usuarios
+                ORDER BY reset_solicitado DESC, nome COLLATE NOCASE"""
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
+def contar_resets_pendentes():
+    with get_db() as conn:
+        return conn.execute(
+            "SELECT COUNT(*) FROM usuarios WHERE reset_solicitado = 1"
+        ).fetchone()[0]
+
+
+def marcar_reset_solicitado(usuario_id):
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE usuarios SET reset_solicitado = 1 WHERE id = ?", (usuario_id,)
+        )
+
+
+def redefinir_senha(usuario_id, senha_hash):
+    """Set a new password hash and clear any pending reset request."""
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE usuarios SET senha = ?, reset_solicitado = 0 WHERE id = ?",
+            (senha_hash, usuario_id),
+        )

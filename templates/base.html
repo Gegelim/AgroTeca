@@ -32,6 +32,12 @@
                 {% if session.role == 'admin' %}
                     <span class="role-badge role-admin">Admin</span>
                     <a href="/admin" class="navbar-link">Painel</a>
+                    <a href="/moradores" class="navbar-link">
+                        Moradores
+                        {% if resets_pendentes %}
+                        <span class="tab-badge">{{ resets_pendentes }}</span>
+                        {% endif %}
+                    </a>
                 {% else %}
                     <span class="role-badge role-aluno">Aluno</span>
                 {% endif %}

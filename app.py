@@ -3,7 +3,17 @@ import os
 import secrets
 from functools import wraps
 
-from flask import Flask, abort, redirect, render_template, request, session
+from datetime import datetime
+
+from flask import (
+    Flask,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+)
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -67,6 +77,23 @@ def create_app():
     app.secret_key = secret
 
     CSRFProtect(app)
+
+    MESES = (
+        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+    )
+
+    @app.template_filter("data_br")
+    def data_br(valor):
+        """Render a stored ISO timestamp as a plain Brazilian date, e.g.
+        "12 de junho de 2026". Empty/older rows degrade to nothing."""
+        if not valor:
+            return ""
+        try:
+            d = datetime.fromisoformat(str(valor))
+        except ValueError:
+            return ""
+        return f"{d.day} de {MESES[d.month - 1]} de {d.year}"
 
     @app.context_processor
     def inject_curadoria_badge():
@@ -233,9 +260,10 @@ def _register_routes(app):
         with get_db() as conn:
             conn.execute(
                 """INSERT INTO conteudos
-                   (titulo, descricao, categoria, tipo, autor, arquivo)
-                   VALUES (?, ?, ?, ?, ?, ?)""",
-                (titulo, descricao, categoria, tipo, autor, nome_arquivo),
+                   (titulo, descricao, categoria, tipo, autor, arquivo, criado_em)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (titulo, descricao, categoria, tipo, autor, nome_arquivo,
+                 datetime.now().isoformat(timespec="seconds")),
             )
 
         return render_template("enviar.html", sucesso=True)
@@ -280,12 +308,14 @@ def _register_routes(app):
     @admin_required
     def aprovar(id):
         _set_status(id, STATUS_APROVADO)
+        flash("Conteúdo aprovado e publicado no acervo.", "success")
         return redirect("/admin")
 
     @app.route("/rejeitar/<int:id>", methods=["POST"])
     @admin_required
     def rejeitar(id):
         _set_status(id, STATUS_REJEITADO)
+        flash("Conteúdo rejeitado. Ele não aparece no acervo.", "success")
         return redirect("/admin")
 
     @app.route("/deletar/<int:id>", methods=["POST"])
@@ -303,6 +333,7 @@ def _register_routes(app):
                         and os.path.exists(caminho):
                     os.remove(caminho)
             conn.execute("DELETE FROM conteudos WHERE id = ?", (id,))
+        flash("Conteúdo excluído.", "success")
         return redirect("/admin")
 
     @app.route("/editar_conteudo/<int:id>", methods=["GET", "POST"])
@@ -331,6 +362,7 @@ def _register_routes(app):
                     (fields["titulo"], fields["categoria"], fields["tipo"],
                      fields["descricao"], fields["autor"], id),
                 )
+            flash("Alterações salvas.", "success")
             return redirect("/admin")
 
         with get_db() as conn:
@@ -346,30 +378,28 @@ def _register_routes(app):
     @app.route("/moradores")
     @admin_required
     def moradores():
-        return render_template(
-            "moradores.html",
-            usuarios=listar_usuarios(),
-            erro=request.args.get("erro"),
-            redefinido=request.args.get("ok"),
-        )
+        return render_template("moradores.html", usuarios=listar_usuarios())
 
     @app.route("/redefinir-senha/<int:id>", methods=["POST"])
     @admin_required
     def redefinir_senha_admin(id):
         nova = request.form.get("nova_senha") or ""
-        if len(nova) < 6:
-            return redirect("/moradores?erro=A+nova+senha+deve+ter+ao+menos+6+caracteres")
 
         with get_db() as conn:
-            existe = conn.execute(
-                "SELECT 1 FROM usuarios WHERE id = ?", (id,)
+            row = conn.execute(
+                "SELECT nome FROM usuarios WHERE id = ?", (id,)
             ).fetchone()
-        if not existe:
+        if not row:
             abort(404)
+
+        if len(nova) < 6:
+            flash("A nova senha deve ter ao menos 6 caracteres.", "error")
+            return redirect("/moradores")
 
         redefinir_senha(id, generate_password_hash(nova))
         logging.info("Senha redefinida pelo curador para usuario_id=%s", id)
-        return redirect("/moradores?ok=1")
+        flash(f"Senha de {row['nome']} redefinida. Entregue a nova senha com segurança.", "success")
+        return redirect("/moradores")
 
     # ---- auth ----
 

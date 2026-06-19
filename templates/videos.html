@@ -4,11 +4,6 @@
 
 {% block content %}
 
-<a href="/" class="back-link">
-    <i class="fa-solid fa-arrow-left"></i>
-    Voltar
-</a>
-
 <section class="page-title">
     <h1>Vídeos da comunidade</h1>
     <p>Moradores demonstrando práticas, contando histórias e ensinando ofícios</p>
@@ -42,7 +37,7 @@
 
             <div class="video-meta">
                 <span class="video-tag">{{ video[3] }}</span>
-                <small>Enviado por {{ video[5] }}</small>
+                <small>Enviado por {{ video[5] }}{% if video[8] %} · {{ video[8]|data_br }}{% endif %}</small>
             </div>
 
             {% if video[6] %}

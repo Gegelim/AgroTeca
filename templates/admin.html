@@ -79,7 +79,7 @@
             <p class="admin-description">{{ conteudo[2] }}</p>
 
             <div class="admin-author">
-                <i class="fa-solid fa-user"></i> {{ conteudo[5] }}
+                <i class="fa-solid fa-user"></i> {{ conteudo[5] }}{% if conteudo[8] %} · {{ conteudo[8]|data_br }}{% endif %}
             </div>
 
             {% if conteudo[6] %}

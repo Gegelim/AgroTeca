@@ -4,11 +4,6 @@
 
 {% block content %}
 
-<a href="/" class="back-link">
-    <i class="fa-solid fa-arrow-left"></i>
-    Voltar
-</a>
-
 <section class="page-title">
     <h1>Técnicas de plantio</h1>
     <p>Como preparamos a terra, plantamos e cuidamos do que colhemos</p>
@@ -38,7 +33,7 @@
         </p>
 
         <small>
-            Enviado por {{ tecnica[5] }}
+            Enviado por {{ tecnica[5] }}{% if tecnica[8] %} · {{ tecnica[8]|data_br }}{% endif %}
         </small>
 
     </div>

@@ -4,11 +4,6 @@
 
 {% block content %}
 
-<a href="/" class="back-link">
-    <i class="fa-solid fa-arrow-left"></i>
-    Voltar
-</a>
-
 <section class="page-title">
     <h1>Acervo</h1>
     <p>Tudo que a comunidade já compartilhou e os curadores publicaram</p>
@@ -31,7 +26,7 @@
         </p>
 
         <div class="admin-author">
-            Enviado por {{ conteudo[5] }}
+            Enviado por {{ conteudo[5] }}{% if conteudo[8] %} · {{ conteudo[8]|data_br }}{% endif %}
         </div>
 
         {% if conteudo[6] %}

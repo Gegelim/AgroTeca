@@ -14,19 +14,6 @@
     <p>Contas da comunidade e pedidos de nova senha</p>
 </section>
 
-{% if redefinido %}
-<div class="alert alert-success" role="status">
-    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-    Senha redefinida. Entregue a nova senha ao morador com segurança.
-</div>
-{% endif %}
-
-{% if erro %}
-<div class="alert alert-error" role="alert">
-    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> {{ erro }}
-</div>
-{% endif %}
-
 <section class="admin-list">
 
     {% for u in usuarios %}

@@ -234,6 +234,59 @@ a:hover { color: var(--blue); }
 }
 
 
+/* ===== SECTION NAV =====
+   Persistent lateral wayfinding. A reference archive is visited daily; readers
+   must move between sections without returning home first. Sits as a second
+   tier under the masthead, on a lighter paper layer, the way a printed bulletin
+   carries its index across the top. Scrolls sideways on small screens. */
+
+.section-nav {
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+}
+
+.section-nav-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 clamp(var(--s-4), 5vw, var(--s-6));
+    display: flex;
+    gap: clamp(var(--s-2), 2vw, var(--s-5));
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.section-nav-inner::-webkit-scrollbar { display: none; }
+
+.section-nav-link {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: var(--s-2) 0;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: var(--type-sm);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color var(--motion-fast) var(--ease-out-soft),
+                border-color var(--motion-fast) var(--ease-out-soft);
+}
+
+.section-nav-link:hover { color: var(--ink); }
+
+.section-nav-link.is-current {
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom-color: var(--orange);
+}
+
+.flash-region { margin-bottom: var(--s-5); display: grid; gap: var(--s-3); }
+.flash-region .alert { margin-bottom: 0; }
+
+
 /* ===== LAYOUT ===== */
 
 .container {

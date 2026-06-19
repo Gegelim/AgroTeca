@@ -36,7 +36,8 @@ def criar_banco():
                 tipo TEXT,
                 autor TEXT,
                 arquivo TEXT,
-                status TEXT NOT NULL DEFAULT 'pendente'
+                status TEXT NOT NULL DEFAULT 'pendente',
+                criado_em TEXT
             )
         """)
         cur.execute("CREATE INDEX IF NOT EXISTS idx_conteudos_status ON conteudos(status)")
@@ -61,11 +62,15 @@ def _migrar_colunas(cur):
     """Add columns introduced after the initial schema to databases created by
     an earlier version. CREATE TABLE IF NOT EXISTS never alters an existing
     table, so new columns need an explicit, idempotent migration."""
-    cols = {row[1] for row in cur.execute("PRAGMA table_info(usuarios)").fetchall()}
-    if "reset_solicitado" not in cols:
+    user_cols = {row[1] for row in cur.execute("PRAGMA table_info(usuarios)").fetchall()}
+    if "reset_solicitado" not in user_cols:
         cur.execute(
             "ALTER TABLE usuarios ADD COLUMN reset_solicitado INTEGER NOT NULL DEFAULT 0"
         )
+
+    cont_cols = {row[1] for row in cur.execute("PRAGMA table_info(conteudos)").fetchall()}
+    if "criado_em" not in cont_cols:
+        cur.execute("ALTER TABLE conteudos ADD COLUMN criado_em TEXT")
 
 
 def _seed_admin_if_configured(cur):

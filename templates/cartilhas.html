@@ -4,11 +4,6 @@
 
 {% block content %}
 
-<a href="/" class="back-link">
-    <i class="fa-solid fa-arrow-left"></i>
-    Voltar
-</a>
-
 <section class="page-title">
     <h1>Cartilhas</h1>
     <p>Para imprimir, levar à roça e compartilhar à vontade</p>
@@ -27,7 +22,7 @@
             <div>
                 <h2>{{ conteudo[1] }}</h2>
                 <p>{{ conteudo[2] }}</p>
-                <small>Enviado por {{ conteudo[5] }}</small>
+                <small>Enviado por {{ conteudo[5] }}{% if conteudo[8] %} · {{ conteudo[8]|data_br }}{% endif %}</small>
             </div>
         </div>
 

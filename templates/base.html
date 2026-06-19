@@ -52,7 +52,38 @@
         </div>
     </nav>
 
+    {% set p = request.path %}
+    <nav class="section-nav" aria-label="Seções do site">
+        <div class="section-nav-inner">
+            <a href="/" class="section-nav-link {% if p == '/' %}is-current{% endif %}"
+               {% if p == '/' %}aria-current="page"{% endif %}>Início</a>
+            <a href="/tecnicas" class="section-nav-link {% if p == '/tecnicas' %}is-current{% endif %}"
+               {% if p == '/tecnicas' %}aria-current="page"{% endif %}>Técnicas</a>
+            <a href="/videos" class="section-nav-link {% if p == '/videos' %}is-current{% endif %}"
+               {% if p == '/videos' %}aria-current="page"{% endif %}>Vídeos</a>
+            <a href="/cartilhas" class="section-nav-link {% if p == '/cartilhas' %}is-current{% endif %}"
+               {% if p == '/cartilhas' %}aria-current="page"{% endif %}>Cartilhas</a>
+            <a href="/conteudos" class="section-nav-link {% if p == '/conteudos' %}is-current{% endif %}"
+               {% if p == '/conteudos' %}aria-current="page"{% endif %}>Acervo</a>
+            <a href="/comunidade" class="section-nav-link {% if p == '/comunidade' %}is-current{% endif %}"
+               {% if p == '/comunidade' %}aria-current="page"{% endif %}>Comunidade</a>
+        </div>
+    </nav>
+
     <main class="container" id="main" tabindex="-1">
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+        <div class="flash-region">
+            {% for categoria, texto in mensagens %}
+            <div class="alert alert-{{ 'success' if categoria == 'success' else 'error' }}" role="status">
+                <i class="fa-solid {{ 'fa-circle-check' if categoria == 'success' else 'fa-circle-exclamation' }}" aria-hidden="true"></i>
+                {{ texto }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
 
         {% block content %}
         {% endblock %}
